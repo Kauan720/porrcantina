@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PortCantina - Cantina Escolar</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+        }
+
+        header {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.8rem;
+        }
+
+        nav {
+            background: white;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        nav button {
+            padding: 12px 25px;
+            border: none;
+            background: #28a745;
+            color: white;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        nav button.active {
+            background: #20c997;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        h2 {
+            color: #28a745;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .produtos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .produto {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .produto img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .produto-info {
+            padding: 15px;
+            text-align: center;
+        }
+
+        .add-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .carrinho {
+            background: white;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .total {
+            font-size: 1.6rem;
+            text-align: right;
+            margin: 20px 0;
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        /* Seção de Pagamento */
+        .metodo-pagamento {
+            margin: 25px 0;
+            padding: 15px;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            background-color: #fdfdfd;
+        }
+
+        .metodo-pagamento h3 {
+            margin-bottom: 12px;
+            color: #333;
+            font-size: 1.1rem;
+        }
+
+        .opcao-pagamento {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 8px 0;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .opcao-pagamento input {
+            width: auto;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .registros {
+            background: white;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        input {
+            padding: 12px;
+            margin: 5px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            width: 220px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: #28a745;
+            color: white;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🍽️ PortCantina</h1>
+        <p>Cantina Escolar - CEEP Cascavel</p>
+    </header>
+
+    <nav>
+        <button onclick="showPage(1)" class="active">🛒 Cardápio</button>
+        <button onclick="showPage(2)">💳 Carrinho & Pagamento</button>
+        <button onclick="showPage(3)">📋 Registros</button>
+    </nav>
+
+    <div class="container">
+
+        <div id="page1" class="page active">
+            <h2>Cardápio</h2>
+            <div class="produtos-grid" id="produtos"></div>
+        </div>
+
+        <div id="page2" class="page">
+            <h2>Seu Carrinho</h2>
+            <div class="carrinho">
+                <div id="lista-carrinho"></div>
+                <div class="total">Total: R$ <span id="total-valor">0.00</span></div>
+                
+                <div class="metodo-pagamento">
+                    <h3>Selecione a Forma de Pagamento:</h3>
+                    <label class="opcao-pagamento">
+                        <input type="radio" name="forma-pagamento" value="Pix"> 📱 Pix
+                    </label>
+                    <label class="opcao-pagamento">
+                        <input type="radio" name="forma-pagamento" value="Dinheiro"> 💵 Dinheiro
+                    </label>
+                    <label class="opcao-pagamento">
+                        <input type="radio" name="forma-pagamento" value="Cartão de Crédito/Débito"> 💳 Cartão de Crédito / Débito
+                    </label>
+                </div>
+
+                <button onclick="finalizarPagamento()" style="width:100%; padding:15px; font-size:1.1rem; background:#28a745; color:white; border:none; border-radius:8px; font-weight: bold; cursor: pointer;">
+                    Finalizar Pagamento
+                </button>
+            </div>
+        </div>
+
+        <div id="page3" class="page">
+            <h2>Registros de Alunos</h2>
+            <div class="registros">
+                <input type="text" id="nome-aluno" placeholder="Nome do Aluno">
+                <input type="text" id="cgm-aluno" placeholder="CGM">
+                <input type="text" id="serie-aluno" placeholder="Série (ex: 2º Ano)">
+                <input type="text" id="turma-aluno" placeholder="Turma (ex: A)">
+                
+                <br><br>
+                <button onclick="registrarEntrada()" style="padding:12px 20px; background:#28a745; color:white; border:none; border-radius:8px; margin:5px;">Registrar Entrada</button>
+                <button onclick="registrarSaida()" style="padding:12px 20px; background:#28a745; color:white; border:none; border-radius:8px; margin:5px;">Registrar Saída</button>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>CGM</th>
+                            <th>Série</th>
+                            <th>Turma</th>
+                            <th>Entrada</th>
+                            <th>Saída</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-registros"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>PortCantina ©️ 2026 - CEEP Cascavel</p>
+    </footer>
+
+    <script>
+        let carrinho = [];
+        let registros = [];
+
+        const produtos = [
+            { 
+                id: 1, 
+                nome: "Coxinha", 
+                preco: 6.00, 
+                img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSrvpaGbcfcLs8RD3dZYNEyTRTP3GNeVvFrt_wKJFjcoc8v0IFOYVvbIiM&s=10" 
+            },
+            { 
+                id: 2, 
+                nome: "Pastel de Carne", 
+                preco: 7.00, 
+                img: "https://cdn.awsli.com.br/300x300/1047/1047323/produto/291165485/pastel-carne-com-ovo-aavgujaq5h.jpeg" 
+            },
+            { 
+                id: 3, 
+                nome: "Refrigerante", 
+                preco: 5.00, 
+                img: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=500&auto=format&fit=crop&q=80" 
+            },
+            { 
+                id: 4, 
+                nome: "Suco", 
+                preco: 6.50, 
+                img: "https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=500&auto=format&fit=crop&q=80" 
+            },
+            { 
+                id: 5, 
+                nome: "Sanduíche", 
+                preco: 8.00, 
+                img: "https://images.unsplash.com/photo-1509722747041-616f39b57569?w=500&auto=format&fit=crop&q=80" 
+            }
+        ];
+
+        function renderProdutos() {
+            const container = document.getElementById('produtos');
+            container.innerHTML = '';
+            produtos.forEach(prod => {
+                container.innerHTML += `
+                    <div class="produto">
+                        <img src="${prod.img}" alt="${prod.nome}">
+                        <div class="produto-info">
+                            <h3>${prod.nome}</h3>
+                            <p><strong>R$ ${prod.preco.toFixed(2)}</strong></p>
+                            <button class="add-btn" onclick="adicionarAoCarrinho(${prod.id})">Adicionar</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function adicionarAoCarrinho(id) {
+            const produto = produtos.find(p => p.id === id);
+            carrinho.push(produto);
+            alert(produto.nome + " adicionado ao carrinho!");
+            atualizarCarrinho();
+        }
+
+        function atualizarCarrinho() {
+            let total = 0;
+            let html = `<table><tr><th>Item</th><th>Preço</th></tr>`;
+            carrinho.forEach(item => {
+                html += `<tr><td>${item.nome}</td><td>R$ ${item.preco.toFixed(2)}</td></tr>`;
+                total += item.preco;
+            });
+            html += `</table>`;
+            document.getElementById('lista-carrinho').innerHTML = html;
+            document.getElementById('total-valor').textContent = total.toFixed(2);
+        }
+
+        function finalizarPagamento() {
+            if (carrinho.length === 0) {
+                alert("Carrinho vazio!");
+                return;
+            }
+
+            // Captura o botão de rádio que está marcado
+            const opcaoSelecionada = document.querySelector('input[name="forma-pagamento"]:checked');
+            
+            if (!opcaoSelecionada) {
+                alert("Por favor, selecione uma forma de pagamento antes de finalizar!");
+                return;
+            }
+
+            const metodo = opcaoSelecionada.value;
+            alert(`✅ Pagamento realizado com sucesso via ${metodo}!`);
+            
+            // Reseta o carrinho e a seleção de pagamento
+            carrinho = [];
+            opcaoSelecionada.checked = false;
+            atualizarCarrinho();
+            showPage(1);
+        }
+
+        function registrarEntrada() {
+            const nome = document.getElementById('nome-aluno').value.trim();
+            const cgm = document.getElementById('cgm-aluno').value.trim();
+            const serie = document.getElementById('serie-aluno').value.trim();
+            const turma = document.getElementById('turma-aluno').value.trim();
+
+            if (!nome || !cgm || !serie || !turma) {
+                alert("Preencha todos os campos!");
+                return;
+            }
+
+            const hora = new Date().toLocaleTimeString('pt-BR');
+            registros.push({ 
+                nome, 
+                cgm, 
+                serie, 
+                turma, 
+                entrada: hora, 
+                saida: "-" 
+            });
+
+            renderRegistros();
+            limparCampos();
+        }
+
+        function registrarSaida() {
+            const cgm = document.getElementById('cgm-aluno').value.trim();
+            if (!cgm) {
+                alert("Digite o CGM para registrar a saída!");
+                return;
+            }
+
+            const aluno = registros.find(r => r.cgm === cgm && r.saida === "-");
+            if (aluno) {
+                aluno.saida = new Date().toLocaleTimeString('pt-BR');
+                renderRegistros();
+            } else {
+                alert("Aluno não encontrado ou saída já registrada!");
+            }
+            limparCampos();
+        }
+
+        function limparCampos() {
+            document.getElementById('nome-aluno').value = '';
+            document.getElementById('cgm-aluno').value = '';
+            document.getElementById('serie-aluno').value = '';
+            document.getElementById('turma-aluno').value = '';
+        }
+
+        function renderRegistros() {
+            const tbody = document.getElementById('tabela-registros');
+            tbody.innerHTML = '';
+            registros.forEach(reg => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${reg.nome}</td>
+                        <td>${reg.cgm}</td>
+                        <td>${reg.serie}</td>
+                        <td>${reg.turma}</td>
+                        <td>${reg.entrada}</td>
+                        <td>${reg.saida}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function showPage(page) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('page' + page).classList.add('active');
+            
+            document.querySelectorAll('nav button').forEach((btn, index) => {
+                btn.classList.toggle('active', index === page - 1);
+            });
+        }
+
+        window.onload = renderProdutos;
+    </script>
+</body>
+</html>
